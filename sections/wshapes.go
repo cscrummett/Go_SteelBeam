@@ -22,6 +22,31 @@ func parseFloat(s string) float64 {
 	return v
 }
 
+func LoadShapeOptions() ([]string, error) {
+	file, err := os.Open("sections/wshapes.csv")
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil, err
+	}
+
+	var shapes []string
+	for i, record := range records {
+		if i == 0 {
+			continue //Skip header
+		}
+		// Shape name in first column
+		shapes = append(shapes, record[0])
+	}
+
+	return shapes, nil
+}
+
 func LoadWShapes() ([]WShape, error) {
 	file, err := os.Open("sections/wshapes.csv")
 	if err != nil {

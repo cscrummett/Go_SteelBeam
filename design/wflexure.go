@@ -7,6 +7,7 @@ import (
 	"github.com/cscrummett/Go_SteelBeam/sections"
 )
 
+// always calc this (Section F2)
 func Mn_Calc(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float64) float64 {
 	var Lp float64 = 1.76 * shape.Ry * math.Sqrt(E/Fy)         //F2-5 (in) Limiting laterally unbraced length for yielding limit state
 	var jcsxh0 float64 = shape.J * 1.0 / (shape.Sx * shape.H0) //c = 1.0 for W-flange (F2-8a)
@@ -15,14 +16,12 @@ func Mn_Calc(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float6
 	var Mp float64 = Fy * shape.Zx // k-in
 	var Mp_kft float64 = Mp / 12   //k-ft
 
-	fmt.Println("Lb =", Lb/12, "ft")
-	fmt.Println("Lp =", Lp/12, "ft")
+	fmt.Printf("Lb = %.1f ft\n", Lb/12)
+	fmt.Printf("Lp = %.1f ft\n", Lp/12)
 
 	if Lb <= Lp { //case a (plastic hinge)
-		fmt.Println("Case A: plastic hinge")
-		fmt.Println("Fy =", Fy, " ksi")
-		fmt.Println("Zx =", shape.Zx, "in^3")
-		fmt.Println("Mp =", Mp_kft, "k-ft")
+		fmt.Println("Case A: Limit State is Plastic Hinge")
+		fmt.Printf("Mp = %.0f k-ft\n", Mp_kft)
 		return Mp //return Mp
 	}
 
@@ -35,14 +34,38 @@ func Mn_Calc(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float6
 		var Fcr float64 = Fcr_01 * math.Sqrt(1+0.078*jcsxh0*lbrts2) //critical stress, ksi
 		var Mn float64 = Fcr * shape.Sx                             //k-in
 		var Mn_kft float64 = Mn / 12                                //k-ft
-		fmt.Println("Case C: elastic LTB")
-		fmt.Println("Mn =", Mn_kft, " k-ft")
+		fmt.Println("Case C: Limit State is Elastic LTB")
+		fmt.Printf("Mn = %.0f k-ft\n", Mn_kft)
 		return Mn
 	} else { //case b (inelastic LTB)
 		var Mn float64 = Cb * (Mp - (Mp-0.7*Fy*shape.Sx)*((Lb-Lp)/(Lr-Lp))) //k-in
 		var Mn_kft float64 = Mn / 12                                        //k-ft
-		fmt.Println("Case B: inelastic LTB")
-		fmt.Println("Mn =", Mn_kft, " k-ft")
+		fmt.Println("Case B: Limit State is Inelastic LTB")
+		fmt.Printf("Mn = %.0f k-ft\n", Mn_kft)
 		return Mn
 	}
+}
+
+// Determine which sections apply:
+func beam_capacity(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float64) float64 {
+	// Always calc F2
+	var Mn float64 = Mn_Calc(shape, Cb, Fy, E, Lb)
+	return Mn
+	//Check flange condition:
+
+	//Check web condition:
+
+	//Compact Web & Noncompact Flanges:
+	//F2 applies
+	//F3-1 applies
+
+	//Compact Web & Slender Flanges:
+	//F2 applies
+	//F3-2 applies
+
+	//Noncompact Web:
+	//F4 applies
+
+	//Slender flanges:
+
 }
