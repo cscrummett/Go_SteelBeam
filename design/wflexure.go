@@ -46,14 +46,39 @@ func Mn_Calc(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float6
 	}
 }
 
+func flange_check(shape sections.WShape, Fy float64, E float64) string {
+	if shape.Bf/shape.Tf < 0.38*math.Sqrt(E/Fy) {
+		return "compact"
+	} else if shape.Bf/shape.Tf > math.Sqrt(E/Fy) {
+		return "slender"
+	} else {
+		return "noncompact"
+	}
+}
+
+func web_check(shape sections.WShape, Fy float64, E float64) string {
+	if shape.H/shape.Tw < 3.76*math.Sqrt(E/Fy) {
+		return "compact"
+	} else if shape.H/shape.Tw > 5.70*math.Sqrt(E/Fy) {
+		return "slender"
+	} else {
+		return "noncompact"
+	}
+}
+
 // Determine which sections apply:
-func beam_capacity(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float64) float64 {
+func Beam_capacity(shape sections.WShape, Cb float64, Fy float64, E float64, Lb float64) float64 {
+	//Check flange condition:
+	var flange_condition string = flange_check(shape, Fy, E)
+	fmt.Printf("Flange is %s\n", flange_condition)
+
+	//Check web condition:
+	var web_condition string = web_check(shape, Fy, E)
+	fmt.Printf("Web is %s\n", web_condition)
+
 	// Always calc F2
 	var Mn float64 = Mn_Calc(shape, Cb, Fy, E, Lb)
 	return Mn
-	//Check flange condition:
-
-	//Check web condition:
 
 	//Compact Web & Noncompact Flanges:
 	//F2 applies

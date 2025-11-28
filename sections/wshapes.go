@@ -15,6 +15,10 @@ type WShape struct {
 	J     float64
 	Ry    float64
 	Cw    float64
+	Bf    float64
+	Tf    float64
+	H     float64
+	Tw    float64
 }
 
 func parseFloat(s string) float64 {
@@ -75,6 +79,10 @@ func LoadWShapes() ([]WShape, error) {
 			J:     parseFloat(row[5]),
 			Ry:    parseFloat(row[6]),
 			Cw:    parseFloat(row[7]),
+			Bf:    parseFloat(row[8]),
+			Tf:    parseFloat(row[9]),
+			H:     parseFloat(row[10]),
+			Tw:    parseFloat(row[11]),
 		}
 
 		shapes = append(shapes, s)

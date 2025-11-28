@@ -72,7 +72,7 @@ func runBeamDesign() {
 	}
 
 	fmt.Println("")
-	var Mn float64 = design.Mn_Calc(shape, Cb, Fy, E, Lb)
+	var Mn float64 = design.Beam_capacity(shape, Cb, Fy, E, Lb)
 	var Mn_kft float64 = Mn / 12
 
 	p := message.NewPrinter(language.English)
